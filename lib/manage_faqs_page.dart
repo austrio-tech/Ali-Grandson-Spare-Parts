@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'add_edit_faq_page.dart';
 
+// ManageFAQsPage is an admin-only screen used to add, edit, or delete Frequently Asked Questions.
 class ManageFAQsPage extends StatefulWidget {
   const ManageFAQsPage({super.key});
 
@@ -10,15 +11,20 @@ class ManageFAQsPage extends StatefulWidget {
 }
 
 class _ManageFAQsPageState extends State<ManageFAQsPage> {
+  // A list to store the FAQs fetched from the database.
   List<Map<String, dynamic>> _faqs = [];
+  
+  // Loading state to show a progress spinner while data is being loaded.
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    // Load the existing FAQs as soon as the admin opens this page.
     _loadFAQs();
   }
 
+  // Fetches all FAQs from the database.
   Future<void> _loadFAQs() async {
     setState(() {
       _isLoading = true;
@@ -26,7 +32,7 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
     final db = DatabaseHelper.instance;
     var faqs = await db.getAllFAQs();
     
-    // Auto-seed if the list is empty
+    // If there are no FAQs at all, auto-fill the list with default ones.
     if (faqs.isEmpty) {
       await db.seedFAQs();
       faqs = await db.getAllFAQs();
@@ -38,6 +44,7 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
     });
   }
 
+  // Resets the FAQ list to the original set of questions provided by the app.
   Future<void> _restoreDefaults() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -53,11 +60,12 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
 
     if (confirmed == true) {
       await DatabaseHelper.instance.seedFAQs();
-      _loadFAQs();
+      _loadFAQs(); // Refresh the list after restoring.
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Default FAQs restored')));
     }
   }
 
+  // Permanently removes an FAQ from the database.
   Future<void> _deleteFAQ(int id) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -73,7 +81,7 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
 
     if (confirmed == true) {
       await DatabaseHelper.instance.deleteFAQ(id);
-      _loadFAQs();
+      _loadFAQs(); // Refresh the list after deleting.
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('FAQ deleted')));
     }
   }
@@ -84,18 +92,20 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
       appBar: AppBar(
         title: const Text('Manage FAQs'),
         actions: [
+          // Button to restore default questions.
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Restore Defaults',
             onPressed: _restoreDefaults,
           ),
+          // Button to go to the page where a new FAQ can be added.
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const AddEditFAQPage()),
-              ).then((_) => _loadFAQs());
+              ).then((_) => _loadFAQs()); // Refresh when returning from the add page.
             },
           ),
         ],
@@ -116,6 +126,7 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            // Button to edit an existing FAQ.
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.blue),
                               onPressed: () {
@@ -125,6 +136,7 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
                                 ).then((_) => _loadFAQs());
                               },
                             ),
+                            // Button to delete an FAQ.
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _deleteFAQ(faq['id']),

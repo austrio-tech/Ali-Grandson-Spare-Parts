@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'database_helper.dart';
 
+// FAQPage provides a chat-like interface for users to find answers to common questions.
 class FAQPage extends StatefulWidget {
   const FAQPage({super.key});
 
@@ -10,6 +11,7 @@ class FAQPage extends StatefulWidget {
 }
 
 class _FAQPageState extends State<FAQPage> {
+  // A list to store the history of the conversation (bot greetings, user questions, and bot answers).
   final List<Map<String, String>> _messages = [
     {
       'role': 'bot',
@@ -17,15 +19,20 @@ class _FAQPageState extends State<FAQPage> {
     }
   ];
 
+  // List to store the FAQs retrieved from the database.
   List<Map<String, dynamic>> _faqs = [];
+  
+  // Controller to handle automatic scrolling when new messages appear.
   final ScrollController _chatScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    // Load the questions from the database as soon as the page opens.
     _loadFAQs();
   }
 
+  // Fetches all available FAQs from the database.
   Future<void> _loadFAQs() async {
     final faqs = await DatabaseHelper.instance.getAllFAQs();
     setState(() {
@@ -33,12 +40,16 @@ class _FAQPageState extends State<FAQPage> {
     });
   }
 
+  // This function runs when a user selects a question to ask.
   void _handleQuestionClick(String question, String answer) {
     setState(() {
+      // Add the user's question to the chat list.
       _messages.add({'role': 'user', 'text': question});
+      // Add the bot's pre-defined answer to the chat list.
       _messages.add({'role': 'bot', 'text': answer});
     });
-    // Scroll to bottom after adding messages
+    
+    // Scroll to the bottom of the chat so the new message is visible.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_chatScrollController.hasClients) {
         _chatScrollController.animateTo(
@@ -50,6 +61,7 @@ class _FAQPageState extends State<FAQPage> {
     });
   }
 
+  // Opens a pop-up menu from the bottom (BottomSheet) containing all FAQ questions.
   void _showFaqOptions() {
     showModalBottomSheet(
       context: context,
@@ -60,7 +72,7 @@ class _FAQPageState extends State<FAQPage> {
         return Container(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min, // Takes only as much space as needed.
             children: [
               const Text(
                 'Select a Question',
@@ -73,6 +85,7 @@ class _FAQPageState extends State<FAQPage> {
                   child: Text('No questions available yet.'),
                 )
               else
+                // Flexible allows the list to scroll if there are many questions.
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -81,7 +94,7 @@ class _FAQPageState extends State<FAQPage> {
                       return ListTile(
                         title: Text(_faqs[index]['question']!),
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Close the menu.
                           _handleQuestionClick(
                             _faqs[index]['question']!,
                             _faqs[index]['answer']!,
@@ -105,6 +118,7 @@ class _FAQPageState extends State<FAQPage> {
         title: const Text('FAQs & Support'),
         centerTitle: true,
       ),
+      // Displays the conversation history as a list of "bubbles".
       body: ListView.builder(
         controller: _chatScrollController,
         padding: const EdgeInsets.all(16.0),
@@ -113,12 +127,13 @@ class _FAQPageState extends State<FAQPage> {
           final message = _messages[index];
           final isBot = message['role'] == 'bot';
           return Align(
+            // Bot messages on the left, user messages on the right.
             alignment: isBot ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 5.0),
               padding: const EdgeInsets.all(12.0),
               decoration: BoxDecoration(
-                color: isBot ? Colors.white : maroon,
+                color: isBot ? Colors.white : maroon, // Distinct colors for bot/user.
                 borderRadius: BorderRadius.circular(15.0),
                 border: isBot ? Border.all(color: silver) : null,
                 boxShadow: [
@@ -130,7 +145,7 @@ class _FAQPageState extends State<FAQPage> {
                 ],
               ),
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.75,
+                maxWidth: MediaQuery.of(context).size.width * 0.75, // Message bubble width.
               ),
               child: Text(
                 message['text']!,
@@ -143,6 +158,7 @@ class _FAQPageState extends State<FAQPage> {
           );
         },
       ),
+      // A floating button that opens the question list.
       floatingActionButton: FloatingActionButton(
         onPressed: _showFaqOptions,
         backgroundColor: maroon,

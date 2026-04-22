@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'database_helper.dart';
 import 'order_page.dart';
 
+// CartPage shows the list of items the user has selected to buy.
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
@@ -12,15 +13,20 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  // A list to store items currently in the user's cart.
   List<Map<String, dynamic>> _cartItems = [];
+  
+  // Loading state to show a spinner while fetching data.
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    // Load items from the database when the cart page is opened.
     _loadCartItems();
   }
 
+  // Fetches items from the 'cart' table in the database for the logged-in user.
   Future<void> _loadCartItems() async {
     final prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('user_username') ?? '';
@@ -35,8 +41,11 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  // Increases or decreases the quantity of an item in the cart.
   Future<void> _updateQuantity(Map<String, dynamic> item, int newQuantity) async {
     final available = item['available'] as int;
+    
+    // Checks if the requested quantity exceeds the actual stock.
     if (newQuantity > available) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Only $available items available in stock.')),
@@ -44,17 +53,20 @@ class _CartPageState extends State<CartPage> {
       return;
     }
 
+    // Only update if the quantity is at least 1.
     if (newQuantity > 0) {
       await DatabaseHelper.instance.updateCartItem(item['cart_id'], newQuantity);
-      _loadCartItems();
+      _loadCartItems(); // Refresh the list.
     }
   }
 
+  // Removes an item completely from the cart.
   Future<void> _deleteItem(int cartId) async {
     await DatabaseHelper.instance.deleteCartItem(cartId);
-    _loadCartItems();
+    _loadCartItems(); // Refresh the list.
   }
 
+  // Calculates the total price of all items in the cart.
   double get _totalPrice {
     return _cartItems.fold(0, (sum, item) => sum + (item['price'] * item['quantity']));
   }
@@ -71,6 +83,7 @@ class _CartPageState extends State<CartPage> {
               ? const Center(child: Text('Your cart is empty.'))
               : Column(
                   children: [
+                    // Flexible list area for cart items.
                     Expanded(
                       child: ListView.builder(
                         itemCount: _cartItems.length,
@@ -79,6 +92,7 @@ class _CartPageState extends State<CartPage> {
                           return Card(
                             margin: const EdgeInsets.all(8.0),
                             child: ListTile(
+                              // Displays the product image.
                               leading: SizedBox(
                                 width: 60,
                                 height: 60,
@@ -104,6 +118,7 @@ class _CartPageState extends State<CartPage> {
                                   Text('Stock: ${item['available']}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
                                 ],
                               ),
+                              // Buttons to change quantity or remove the item.
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -127,14 +142,19 @@ class _CartPageState extends State<CartPage> {
                         },
                       ),
                     ),
+                    // Bottom summary section with Total and Checkout button.
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Total: OMR ${_totalPrice.toStringAsFixed(3)}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                            'Total: OMR ${_totalPrice.toStringAsFixed(3)}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
                           ElevatedButton(
                             onPressed: () {
+                              // Navigates to the Order details page to finalize purchase.
                               Navigator.of(context).push(MaterialPageRoute(builder: (context) => const OrderPage()));
                             },
                             child: const Text('Place Order'),

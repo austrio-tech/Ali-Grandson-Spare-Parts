@@ -2,29 +2,38 @@ import 'dart:typed_data';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+// DatabaseHelper is a special class called a 'Singleton'. 
+// This ensures that only one connection to the database exists at any time.
 class DatabaseHelper {
+  // This is the single instance of DatabaseHelper that the rest of the app will use.
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static Database? _database;
 
+  // Private constructor prevents other parts of the app from creating new instances.
   DatabaseHelper._privateConstructor();
 
+  // Getter for the database. If it's already open, it returns it; otherwise, it opens it.
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
+  // This function sets up the database file on the phone.
   Future<Database> _initDatabase() async {
     final path = await getDatabasesPath();
     return await openDatabase(
       join(path, 'alis_grandson.db'),
-      version: 10,
+      version: 10, // Increment this version number when you change the table structure.
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
   }
 
+  // _onCreate is called the very first time the app is run. 
+  // It creates all the "tables" (like spreadsheets) to store data.
   Future<void> _onCreate(Database db, int version) async {
+    // Create 'users' table to store account information.
     await db.execute('''
       CREATE TABLE users(
         username TEXT PRIMARY KEY,
@@ -35,6 +44,8 @@ class DatabaseHelper {
         dob TEXT NOT NULL
       )
     ''');
+    
+    // Create 'admins' table for administrative login.
     await db.execute('''
       CREATE TABLE admins(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,19 +53,23 @@ class DatabaseHelper {
         password TEXT NOT NULL
       )
     ''');
+    
+    // Create 'spare_part_products' table to store catalog items.
     await db.execute('''
       CREATE TABLE spare_part_products(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
-        image BLOB,
+        image BLOB, -- BLOB stands for Binary Large Object, used here for storing images.
         type TEXT,
         brand TEXT,
         model TEXT,
-        price REAL NOT NULL,
+        price REAL NOT NULL, -- REAL is used for decimal numbers like 10.50.
         available INTEGER NOT NULL
       )
     ''');
+
+    // Create 'cart' table to keep track of items users want to buy.
     await db.execute('''
       CREATE TABLE cart(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -65,6 +80,8 @@ class DatabaseHelper {
         FOREIGN KEY (product_id) REFERENCES spare_part_products (id)
       )
     ''');
+
+    // Create 'orders' table to record finalized purchases.
     await db.execute('''
       CREATE TABLE orders(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,6 +97,8 @@ class DatabaseHelper {
         FOREIGN KEY (user_username) REFERENCES users (username)
       )
     ''');
+
+    // Create 'order_items' table to store which products belong to which order.
     await db.execute('''
       CREATE TABLE order_items(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,6 +110,8 @@ class DatabaseHelper {
         FOREIGN KEY (product_id) REFERENCES spare_part_products (id)
       )
     ''');
+
+    // Create 'faqs' table for Frequently Asked Questions.
     await db.execute('''
       CREATE TABLE faqs(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,13 +120,14 @@ class DatabaseHelper {
       )
     ''');
     
-    // Seed default FAQs
+    // Fill the FAQ table with some initial data.
     await seedFAQs(db);
 
-    // Insert default admin credentials.
+    // Insert a default administrator account.
     await db.insert('admins', {'email': 'admin', 'password': 'admin123'});
   }
 
+  // Pre-fills the FAQ table with helpful information for new users.
   Future<void> seedFAQs([Database? db]) async {
     final database = db ?? await instance.database;
     final List<Map<String, String>> defaultFaqs = [
@@ -136,6 +158,8 @@ class DatabaseHelper {
     }
   }
 
+  // _onUpgrade is called when the database version changes. 
+  // It allows adding new features without losing existing data.
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 5) {
       await db.execute('ALTER TABLE users ADD COLUMN phone TEXT NOT NULL DEFAULT ""');
@@ -196,28 +220,33 @@ class DatabaseHelper {
     }
   }
 
+  // Inserts a new user record into the 'users' table.
   Future<int> insertUser(Map<String, dynamic> row) async {
     final db = await instance.database;
     return await db.insert('users', row, conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
+  // Checks if a username already exists to prevent duplicates.
   Future<bool> isUsernameTaken(String username) async {
     final db = await instance.database;
     final result = await db.query('users', where: 'username = ?', whereArgs: [username]);
     return result.isNotEmpty;
   }
 
+  // Checks if an email is already being used by another account.
   Future<bool> isEmailTaken(String email, [String? currentUsername]) async {
     final db = await instance.database;
     final result = await db.query('users', where: 'email = ? AND username != ?', whereArgs: [email, currentUsername]);
     return result.isNotEmpty;
   }
 
+  // Retrieves all registered users.
   Future<List<Map<String, dynamic>>> getUsers() async {
     final db = await instance.database;
     return await db.query('users', orderBy: 'username ASC');
   }
 
+  // Finds a specific user based on their username.
   Future<Map<String, dynamic>?> getUserByUsername(String username) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -231,6 +260,7 @@ class DatabaseHelper {
     return null;
   }
 
+  // Updates an existing user's information.
   Future<int> updateUser(Map<String, dynamic> row) async {
     final db = await instance.database;
     return await db.update(
@@ -241,6 +271,7 @@ class DatabaseHelper {
     );
   }
 
+  // Changes a user's password.
   Future<int> updateUserPassword(String username, String newPassword) async {
     final db = await instance.database;
     return await db.update(
@@ -251,6 +282,7 @@ class DatabaseHelper {
     );
   }
 
+  // Deletes a user account from the database.
   Future<int> deleteUser(String username) async {
     final db = await instance.database;
     return await db.delete(
@@ -260,11 +292,13 @@ class DatabaseHelper {
     );
   }
 
+  // Adds a new product to the catalog.
   Future<int> insertProduct(Map<String, dynamic> row) async {
     final db = await instance.database;
     return await db.insert('spare_part_products', row);
   }
 
+  // Retrieves products with optional filters for stock status.
   Future<List<Map<String, dynamic>>> getProducts({String? filter}) async {
     final db = await instance.database;
     if (filter == 'out_of_stock') {
@@ -275,6 +309,7 @@ class DatabaseHelper {
     return await db.query('spare_part_products', columns: ['id', 'name', 'description', 'type', 'brand', 'model', 'price', 'available'], orderBy: 'id DESC');
   }
 
+  // Fetches a single product's details (excluding image for performance).
   Future<Map<String, dynamic>?> getProduct(int id) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -289,6 +324,7 @@ class DatabaseHelper {
     return null;
   }
 
+  // Fetches only the image for a product.
   Future<Uint8List?> getProductImage(int id) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -303,6 +339,7 @@ class DatabaseHelper {
     return null;
   }
 
+  // Updates product details.
   Future<int> updateProduct(Map<String, dynamic> row) async {
     final db = await instance.database;
     return await db.update(
@@ -313,6 +350,7 @@ class DatabaseHelper {
     );
   }
 
+  // Deletes a product from the catalog.
   Future<int> deleteProduct(int id) async {
     final db = await instance.database;
     return await db.delete(
@@ -322,6 +360,7 @@ class DatabaseHelper {
     );
   }
 
+  // Searches for products based on name or description.
   Future<List<Map<String, dynamic>>> searchProducts(String keyword) async {
     final db = await instance.database;
     return await db.query(
@@ -333,6 +372,7 @@ class DatabaseHelper {
     );
   }
 
+  // Validates user credentials during login.
   Future<Map<String, dynamic>?> getUser(String email, String password) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -346,48 +386,56 @@ class DatabaseHelper {
     return null;
   }
 
+  // Counts total number of registered users.
   Future<int> getUsersCount() async {
     final db = await instance.database;
     final result = await db.rawQuery('SELECT COUNT(*) FROM users');
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Counts total number of products.
   Future<int> getProductsCount() async {
     final db = await instance.database;
     final result = await db.rawQuery('SELECT COUNT(*) FROM spare_part_products');
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Counts products that are currently out of stock.
   Future<int> getOutOfStockCount() async {
     final db = await instance.database;
     final result = await db.rawQuery('SELECT COUNT(*) FROM spare_part_products WHERE available = 0');
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Counts products that have less than 10 items remaining.
   Future<int> getLowStockCount() async {
     final db = await instance.database;
     final result = await db.rawQuery('SELECT COUNT(*) FROM spare_part_products WHERE available > 0 AND available < 10');
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Counts orders that haven't been delivered or cancelled yet.
   Future<int> getPendingOrdersCount() async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Delivered', 'Cancelled')");
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Counts orders that have been successfully delivered.
   Future<int> getCompletedOrdersCount() async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT COUNT(*) FROM orders WHERE status = 'Delivered'");
     return Sqflite.firstIntValue(result) ?? 0;
   }
 
+  // Calculates the total money earned from all delivered orders.
   Future<double> getTotalRevenue() async {
     final db = await instance.database;
     final result = await db.rawQuery("SELECT SUM(total_price) FROM orders WHERE status = 'Delivered'");
     return (result.first.values.first as num?)?.toDouble() ?? 0.0;
   }
 
+  // Validates admin credentials during login.
   Future<Map<String, dynamic>?> getAdmin(String email, String password) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
@@ -401,7 +449,8 @@ class DatabaseHelper {
     return null;
   }
 
-  // Cart methods
+  // Adds an item to the user's shopping cart. 
+  // If the item is already there, it increases the quantity.
   Future<int> addToCart(String userUsername, int productId, int quantity) async {
     final db = await instance.database;
     final existingCartItem = await db.query(
@@ -427,6 +476,7 @@ class DatabaseHelper {
     }
   }
 
+  // Retrieves all items in a user's cart including product details.
   Future<List<Map<String, dynamic>>> getCartItems(String userUsername) async {
     final db = await instance.database;
     final cartItems = await db.query(
@@ -448,6 +498,7 @@ class DatabaseHelper {
     return products;
   }
 
+  // Updates the quantity of an item in the cart.
   Future<int> updateCartItem(int cartId, int quantity) async {
     final db = await instance.database;
     return await db.update(
@@ -458,6 +509,7 @@ class DatabaseHelper {
     );
   }
 
+  // Removes an item from the cart.
   Future<int> deleteCartItem(int cartId) async {
     final db = await instance.database;
     return await db.delete(
@@ -467,6 +519,7 @@ class DatabaseHelper {
     );
   }
 
+  // Deletes all items from a user's cart.
   Future<int> clearCart(String userUsername) async {
     final db = await instance.database;
     return await db.delete(
@@ -476,11 +529,13 @@ class DatabaseHelper {
     );
   }
 
-  // Order methods
+  // Processes a new order by recording it and updating stock levels in a single transaction.
   Future<int> placeOrder(Map<String, dynamic> order, List<Map<String, dynamic>> items) async {
     final db = await instance.database;
     return await db.transaction((txn) async {
+      // Record the main order.
       final orderId = await txn.insert('orders', order);
+      // Record each item in the order.
       for (var item in items) {
         await txn.insert('order_items', {
           'order_id': orderId,
@@ -488,18 +543,19 @@ class DatabaseHelper {
           'quantity': item['quantity'],
           'price': item['price'],
         });
-        // Reduce quantity in stock
+        // Reduce the number of items available for sale.
         await txn.rawUpdate(
           'UPDATE spare_part_products SET available = available - ? WHERE id = ?',
           [item['quantity'], item['id']],
         );
       }
-      // Clear cart
+      // After order is placed, empty the user's cart.
       await txn.delete('cart', where: 'user_username = ?', whereArgs: [order['user_username']]);
       return orderId;
     });
   }
 
+  // Retrieves all orders placed by a specific user.
   Future<List<Map<String, dynamic>>> getUserOrders(String userUsername) async {
     final db = await instance.database;
     return await db.query(
@@ -510,6 +566,7 @@ class DatabaseHelper {
     );
   }
 
+  // Retrieves all orders for the admin with optional status filtering.
   Future<List<Map<String, dynamic>>> getAllOrders({String? filter}) async {
     final db = await instance.database;
     if (filter == 'pending') {
@@ -520,9 +577,11 @@ class DatabaseHelper {
     return await db.query('orders', orderBy: 'id DESC');
   }
 
+  // Updates the status (e.g., Pending -> Shipped -> Delivered) of an order.
   Future<int> updateOrderStatus(int orderId, String status) async {
     final db = await instance.database;
     final Map<String, dynamic> values = {'status': status};
+    // Record completion date if status is set to Delivered or Cancelled.
     if (status == 'Delivered' || status == 'Cancelled') {
       values['completion_date'] = DateTime.now().toString();
     }
@@ -534,6 +593,7 @@ class DatabaseHelper {
     );
   }
 
+  // Retrieves the specific items belonging to an order.
   Future<List<Map<String, dynamic>>> getOrderItems(int orderId) async {
     final db = await instance.database;
     final items = await db.query(
@@ -554,7 +614,7 @@ class DatabaseHelper {
     return detailedItems;
   }
 
-  // FAQ methods
+  // FAQ management methods.
   Future<int> insertFAQ(Map<String, dynamic> faq) async {
     final db = await instance.database;
     return await db.insert('faqs', faq);

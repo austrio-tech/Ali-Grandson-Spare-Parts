@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'edit_user_page.dart';
 
+// ViewUserPage is an administrative screen used to see detailed information about a specific customer.
 class ViewUserPage extends StatefulWidget {
+  // 'user' is the Map containing all the customer's data passed from the management list.
   final Map<String, dynamic> user;
 
   const ViewUserPage({super.key, required this.user});
@@ -23,15 +25,17 @@ class _ViewUserPageState extends State<ViewUserPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display various customer data points row by row.
             _buildDetailRow('Username', widget.user['username'] ?? 'N/A'),
             _buildDetailRow('Name', widget.user['name'] ?? 'N/A'),
             _buildDetailRow('Email', widget.user['email'] ?? 'N/A'),
             _buildDetailRow('Phone', widget.user['phone'] ?? 'N/A'),
             _buildDetailRow('Date of Birth', widget.user['dob'] ?? 'N/A'),
-            const Spacer(),
+            const Spacer(), // Pushes the action buttons to the bottom of the screen.
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Button to open the edit screen.
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -46,6 +50,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                 ),
                 const SizedBox(height: 10),
+                // Button to trigger the password change pop-up.
                 ElevatedButton.icon(
                   onPressed: () => _showChangePasswordDialog(context, widget.user['username']),
                   icon: const Icon(Icons.lock),
@@ -53,6 +58,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 ),
                 const SizedBox(height: 10),
+                // Button to trigger the user deletion pop-up.
                 ElevatedButton.icon(
                   onPressed: () => _showDeleteConfirmationDialog(context, widget.user['username']),
                   icon: const Icon(Icons.delete),
@@ -67,6 +73,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
     );
   }
 
+  // A helper function to build a clean looking row for data like "Email: user@example.com".
   Widget _buildDetailRow(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -80,6 +87,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
     );
   }
 
+  // Opens a pop-up dialog box to set a new password for the customer.
   void _showChangePasswordDialog(BuildContext context, String username) {
     final passwordController = TextEditingController();
     showDialog(
@@ -98,8 +106,9 @@ class _ViewUserPageState extends State<ViewUserPage> {
           ),
           TextButton(
             onPressed: () async {
+              // Update the password in the database.
               await DatabaseHelper.instance.updateUserPassword(username, passwordController.text);
-              Navigator.pop(context);
+              Navigator.pop(context); // Close the dialog.
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Password updated successfully')),
               );
@@ -111,6 +120,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
     );
   }
 
+  // Opens a pop-up to confirm if the admin really wants to delete this customer account.
   void _showDeleteConfirmationDialog(BuildContext context, String username) {
     showDialog(
       context: context,
@@ -124,9 +134,10 @@ class _ViewUserPageState extends State<ViewUserPage> {
           ),
           TextButton(
             onPressed: () async {
+              // Remove the user from the database.
               await DatabaseHelper.instance.deleteUser(username);
-              Navigator.pop(context); // Close the dialog
-              Navigator.pop(context); // Go back to the user list
+              Navigator.pop(context); // Close the dialog.
+              Navigator.pop(context); // Close the view page and return to the user list.
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('User removed successfully')),
               );

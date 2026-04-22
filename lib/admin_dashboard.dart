@@ -8,6 +8,8 @@ import 'manage_orders_page.dart';
 import 'manage_faqs_page.dart';
 import 'database_helper.dart';
 
+// AdminDashboard is the main control center for the store administrator.
+// It provides a summary of users, products, orders, and total revenue.
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
 
@@ -16,6 +18,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
+  // Variables to hold statistics shown on the dashboard cards.
   int _userCount = 0;
   int _productCount = 0;
   int _outOfStockCount = 0;
@@ -28,14 +31,17 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   void initState() {
     super.initState();
+    // Load the statistics from the database as soon as the dashboard is opened.
     _loadDashboardData();
   }
 
+  // Fetches various counts and totals from the database to update the UI.
   Future<void> _loadDashboardData() async {
     final prefs = await SharedPreferences.getInstance();
     final email = prefs.getString('admin_email') ?? 'Admin';
     
     final db = DatabaseHelper.instance;
+    // Running multiple database queries to get current store status.
     final userCount = await db.getUsersCount();
     final productCount = await db.getProductsCount();
     final outOfStockCount = await db.getOutOfStockCount();
@@ -58,6 +64,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
+  // Logs out the admin by clearing saved credentials and going back to the home screen.
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('admin_logged_in');
@@ -73,10 +80,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
       ),
+      // Drawer is the side menu that slides out from the left.
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
+            // The top section of the side menu, often containing a logo or user info.
             SizedBox(
               height: 250,
               child: DrawerHeader(
@@ -110,6 +119,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         ),
                       ),
                     ),
+                    // Small button to close the drawer.
                     Align(
                       alignment: Alignment.topRight,
                       child: InkWell(
@@ -124,11 +134,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               ),
             ),
+            // Navigation links to different management pages.
             ListTile(
               leading: const Icon(Icons.dashboard),
               title: const Text('Dashboard'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.pop(context); // Just close the drawer as we are already on Dashboard.
               },
             ),
             ListTile(
@@ -163,7 +174,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ManageFAQsPage()));
               },
             ),
-            const Divider(),
+            const Divider(), // A visual line separator.
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
@@ -172,10 +183,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
+      // The main content of the dashboard: a grid of summary cards.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: 2, // Two cards per row.
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
           children: [
@@ -204,6 +216,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  // A helper function to create a uniform look for the dashboard summary cards.
   Widget _buildDashboardCard(String title, String value, IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,

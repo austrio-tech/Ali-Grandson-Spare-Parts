@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'edit_product_page.dart';
 
+// ViewProductPage is an administrative screen that shows all the details of a single spare part.
 class ViewProductPage extends StatefulWidget {
   final int productId;
 
@@ -13,15 +14,20 @@ class ViewProductPage extends StatefulWidget {
 }
 
 class _ViewProductPageState extends State<ViewProductPage> {
+  // Holds the product data retrieved from the database.
   Map<String, dynamic>? _product;
+  
+  // Loading state to show a spinner while fetching data.
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    // Load the product details when the page is opened.
     _loadProduct();
   }
 
+  // Fetches the product information using its unique ID.
   Future<void> _loadProduct() async {
     if (!mounted) return;
     setState(() {
@@ -36,6 +42,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
     }
   }
 
+  // Deletes the product from the store after getting confirmation from the admin.
   Future<void> _deleteProduct() async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -60,16 +67,17 @@ class _ViewProductPageState extends State<ViewProductPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Product removed successfully!')),
       );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(); // Go back to the product list.
     }
   }
 
+  // Opens the edit page for this specific product.
   void _navigateToEditProduct() {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditProductPage(productId: widget.productId),
       ),
-    ).then((_) => _loadProduct());
+    ).then((_) => _loadProduct()); // Refresh the details when returning from editing.
   }
 
   @override
@@ -87,6 +95,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Display the product image at the top.
                       SizedBox(
                         height: 200,
                         child: FutureBuilder<Uint8List?>(
@@ -104,6 +113,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      // List all the technical details of the spare part.
                       _buildDetailRow('Name', _product!['name'] ?? 'N/A'),
                       _buildDetailRow('Description', _product!['description'] ?? 'N/A'),
                       _buildDetailRow('Type', _product!['type'] ?? 'N/A'),
@@ -112,6 +122,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
                       _buildDetailRow('Price', 'OMR ${_product!['price']}'),
                       _buildDetailRow('Available', '${_product!['available']}'),
                       const SizedBox(height: 30),
+                      // Buttons to either Edit or Remove the product.
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -135,6 +146,7 @@ class _ViewProductPageState extends State<ViewProductPage> {
     );
   }
 
+  // A helper function to build a clean looking row for data like "Price: OMR 5.000".
   Widget _buildDetailRow(String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

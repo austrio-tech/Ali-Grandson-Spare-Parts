@@ -11,6 +11,8 @@ import 'cart_page.dart';
 import 'user_orders_page.dart';
 import 'faq_page.dart';
 
+// UserDashboard is the main screen for a logged-in user.
+// It allows users to browse products, search, view their cart, and access their profile.
 class UserDashboard extends StatefulWidget {
   const UserDashboard({super.key});
 
@@ -19,25 +21,38 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboardState extends State<UserDashboard> {
+  // Controller to handle text input in the search bar.
   final TextEditingController _searchController = TextEditingController();
+  
+  // List to store products fetched from the database.
   List<Map<String, dynamic>> _products = [];
+  
+  // Loading state to show a spinner while data is being fetched.
   bool _isLoading = true;
+  
+  // Stores the name to display in the drawer.
   String _displayName = '';
+  
+  // Keeps track of how many items are currently in the user's cart.
   int _cartItemCount = 0;
 
   @override
   void initState() {
     super.initState();
+    // Load initial data when the dashboard opens.
     _loadDashboardData();
   }
 
+  // Fetches user info, products, and cart count.
   Future<void> _loadDashboardData() async {
     final prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('user_username') ?? 'User';
     
+    // Get full user details from the database using the stored username.
     final user = await DatabaseHelper.instance.getUserByUsername(username);
     if (mounted) {
       setState(() {
+        // Use the user's name if available, otherwise fallback to username.
         if (user != null && user['name'] != null && (user['name'] as String).isNotEmpty) {
           _displayName = user['name'];
         } else {
@@ -49,6 +64,7 @@ class _UserDashboardState extends State<UserDashboard> {
     _loadCartCount();
   }
 
+  // Counts how many items are in the user's cart to show on the cart icon.
   Future<void> _loadCartCount() async {
     final prefs = await SharedPreferences.getInstance();
     final username = prefs.getString('user_username') ?? '';
@@ -62,6 +78,7 @@ class _UserDashboardState extends State<UserDashboard> {
     }
   }
 
+  // Fetches all products from the database.
   Future<void> _loadProducts() async {
     if (!mounted) return;
     setState(() {
@@ -76,6 +93,7 @@ class _UserDashboardState extends State<UserDashboard> {
     }
   }
 
+  // Filters products based on a search keyword.
   Future<void> _searchProducts(String keyword) async {
     if (!mounted) return;
     setState(() {
@@ -90,17 +108,20 @@ class _UserDashboardState extends State<UserDashboard> {
     }
   }
 
+  // Opens the detailed view for a selected product.
   void _navigateToViewProduct(int productId) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => UserViewProductPage(productId: productId),
       ),
     ).then((_) {
+      // Refresh products and cart count when returning from the product page.
       _loadProducts();
       _loadCartCount();
     });
   }
 
+  // Logs out the user by clearing saved login data and returning to the home page.
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user_logged_in');
@@ -117,6 +138,7 @@ class _UserDashboardState extends State<UserDashboard> {
       appBar: AppBar(
         title: const Text('Products'),
         actions: [
+          // Cart icon with a badge showing the number of items.
           Stack(
             alignment: Alignment.center,
             children: [
@@ -157,6 +179,7 @@ class _UserDashboardState extends State<UserDashboard> {
           ),
         ],
       ),
+      // Side menu (Drawer) for navigation to other sections.
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -239,7 +262,7 @@ class _UserDashboardState extends State<UserDashboard> {
                 );
               },
             ),
-            const Divider(),
+            const Divider(), // Horizontal line to separate menu items.
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('Logout'),
@@ -251,8 +274,10 @@ class _UserDashboardState extends State<UserDashboard> {
       body: Column(
         children: [
           const SizedBox(height: 10),
-          const BannerCarousel(), // Isolated Carousel Widget
+          // A scrolling banner at the top of the dashboard.
+          const BannerCarousel(),
           const SizedBox(height: 10),
+          // Search box to filter products by name.
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextField(
@@ -266,6 +291,7 @@ class _UserDashboardState extends State<UserDashboard> {
             ),
           ),
           const SizedBox(height: 10),
+          // Display the list of products or a loading indicator.
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -283,6 +309,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
+                                    // Display product image.
                                     SizedBox(
                                       width: 100,
                                       height: 100,
@@ -301,6 +328,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                       ),
                                     ),
                                     const SizedBox(width: 10),
+                                    // Display product details like name, price, and availability.
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,6 +367,7 @@ class _UserDashboardState extends State<UserDashboard> {
   }
 }
 
+// BannerCarousel is a widget that shows auto-sliding promotional images.
 class BannerCarousel extends StatefulWidget {
   const BannerCarousel({super.key});
 
@@ -350,6 +379,8 @@ class _BannerCarouselState extends State<BannerCarousel> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late Timer _timer;
+  
+  // List of image paths for the banner.
   final List<String> _banners = [
     'lib/Banner_Imgs/banner1.png',
     'lib/Banner_Imgs/banner2.png',
@@ -359,6 +390,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
   @override
   void initState() {
     super.initState();
+    // Start a timer that automatically changes the banner page every 1.5 seconds.
     _timer = Timer.periodic(const Duration(milliseconds: 1500), (Timer timer) {
       if (_currentPage < _banners.length - 1) {
         _currentPage++;
@@ -378,6 +410,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
 
   @override
   void dispose() {
+    // Clean up the timer and controller when the widget is removed.
     _timer.cancel();
     _pageController.dispose();
     super.dispose();
@@ -386,7 +419,7 @@ class _BannerCarouselState extends State<BannerCarousel> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 5 / 1,
+      aspectRatio: 5 / 1, // Sets a fixed width-to-height ratio for the banner.
       child: PageView.builder(
         controller: _pageController,
         itemCount: _banners.length,

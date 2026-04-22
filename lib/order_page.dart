@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'database_helper.dart';
 
+// OrderPage is where users provide their delivery address and payment info to finish their purchase.
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
 
@@ -10,16 +11,24 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
+  // GlobalKey helps validate the entire checkout form (checking if address/phone are empty).
   final _formKey = GlobalKey<FormState>();
+  
+  // Controllers for delivery information.
   final _addressController = TextEditingController();
   final _phoneController = TextEditingController();
   final _instructionsController = TextEditingController();
+  
+  // Controllers for credit card details (only used if user selects 'Card').
   final _cardNumberController = TextEditingController();
   final _cardNameController = TextEditingController();
   final _expiryDateController = TextEditingController();
   final _cvvController = TextEditingController();
 
+  // Default payment mode is set to Cash on Delivery.
   String _paymentMode = 'Cash on Delivery';
+  
+  // Lists and variables to hold checkout data.
   List<Map<String, dynamic>> _cartItems = [];
   String _username = '';
   bool _isLoading = true;
@@ -27,9 +36,11 @@ class _OrderPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
+    // Load the items to be ordered and the user's saved phone number.
     _loadOrderData();
   }
 
+  // Pre-fills data like phone number from user profile for convenience.
   Future<void> _loadOrderData() async {
     final prefs = await SharedPreferences.getInstance();
     _username = prefs.getString('user_username') ?? '';
@@ -45,12 +56,16 @@ class _OrderPageState extends State<OrderPage> {
     });
   }
 
+  // Calculates the sum of all items being ordered.
   double get _totalPrice {
     return _cartItems.fold(0, (sum, item) => sum + (item['price'] * item['quantity']));
   }
 
+  // This function is triggered when 'Confirm Order' is clicked.
   Future<void> _placeOrder() async {
+    // 1. Check if all required fields are filled.
     if (_formKey.currentState!.validate()) {
+      // 2. Prepare the order information for the database.
       final order = {
         'user_username': _username,
         'address': _addressController.text,
@@ -58,12 +73,14 @@ class _OrderPageState extends State<OrderPage> {
         'special_instructions': _instructionsController.text,
         'payment_mode': _paymentMode,
         'total_price': _totalPrice,
-        'status': 'Pending',
+        'status': 'Pending', // Initial status for every new order.
         'order_date': DateTime.now().toString(),
       };
 
+      // 3. Save the order and individual items to the database.
       await DatabaseHelper.instance.placeOrder(order, _cartItems);
 
+      // 4. Notify user and go back to the dashboard.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Order placed successfully!')),
       );
@@ -86,12 +103,14 @@ class _OrderPageState extends State<OrderPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Delivery Address Input.
                     TextFormField(
                       controller: _addressController,
                       decoration: const InputDecoration(labelText: 'Delivery Address *'),
                       validator: (value) => value!.isEmpty ? 'Enter delivery address' : null,
                     ),
                     const SizedBox(height: 15),
+                    // Contact Phone Input.
                     TextFormField(
                       controller: _phoneController,
                       decoration: const InputDecoration(labelText: 'Phone Number *'),
@@ -99,6 +118,7 @@ class _OrderPageState extends State<OrderPage> {
                       validator: (value) => value!.isEmpty ? 'Enter phone number' : null,
                     ),
                     const SizedBox(height: 15),
+                    // Optional delivery notes.
                     TextFormField(
                       controller: _instructionsController,
                       decoration: const InputDecoration(
@@ -108,6 +128,7 @@ class _OrderPageState extends State<OrderPage> {
                       maxLines: 2,
                     ),
                     const SizedBox(height: 20),
+                    // Payment selection section.
                     const Text('Payment Mode', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ListTile(
                       title: const Text('Cash on Delivery'),
@@ -133,6 +154,7 @@ class _OrderPageState extends State<OrderPage> {
                         },
                       ),
                     ),
+                    // Conditional section: Only shows card fields if 'Card' is selected.
                     if (_paymentMode == 'Card') ...[
                       const SizedBox(height: 15),
                       const Text('Card Details', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -173,6 +195,7 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ],
                     const SizedBox(height: 25),
+                    // Total bill display.
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -186,6 +209,7 @@ class _OrderPageState extends State<OrderPage> {
                       ),
                     ),
                     const SizedBox(height: 30),
+                    // Button to submit the order.
                     ElevatedButton(
                       onPressed: _placeOrder,
                       child: const Text('Confirm Order'),
