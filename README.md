@@ -1,17 +1,35 @@
-# alis_grandson_app
+# Ali Grandsons Spare Parts - Flutter Migration
 
-Spare Parts App
+## 🏗 Project Architecture
 
-## Getting Started
+This project follows a **Feature-First** industry-standard architecture. The structure is designed to separate business logic, UI, and data layers to ensure maximum scalability and maintainability.
 
-This project is a starting point for a Flutter application.
+### Directory Structure
 
-A few resources to get you started if this is your first Flutter project:
+- `lib/main.dart`: The main entry point that initializes the app and global services.
+- `lib/src/app.dart`: The root `MaterialApp` widget where themes and routing are configured.
+- `lib/src/core/`: Global essentials used by the entire app.
+  - `database/`: Local SQLite persistence logic.
+  - `session/`: Persistent user/admin authentication state.
+  - `theme/`: Global styling, colors, and visual constants.
+- `lib/src/shared/`: Logic and widgets that are reused across multiple features.
+  - `services/`: Reusable logic like Email or Cloud services.
+- `lib/src/features/`: The heart of the app, divided by business domain.
+  - Each feature (e.g., `auth`, `catalog`, `orders`) contains:
+    - `data/`: Local/Remote data sources and repositories.
+    - `presentation/`: UI components divided into `pages` and `widgets`.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## 📜 Import Conventions
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Always use **Absolute Package Imports** instead of relative paths.
+- ✅ `import 'package:alis_grandson_app/src/core/theme/app_colors.dart';`
+- ❌ `import '../../core/theme/app_colors.dart';`
+
+This prevents broken links when moving files and is the standard for professional Dart development.
+
+## 🚀 Onboarding for New Developers
+
+1. **Adding a Feature**: Create a new subfolder in `lib/src/features/` naming it after the business domain (e.g., `search`). Add `presentation/pages` for the screens.
+2. **Naming**: Use `lowercase_with_underscores.dart` for all file names.
+3. **Single Responsibility**: Each file should ideally contain only one public class. If a page has a complex widget, move it into a `presentation/widgets` subfolder.
+4. **Logic**: Database changes must be performed in `src/core/database/database_helper.dart` to maintain a single source of truth.
