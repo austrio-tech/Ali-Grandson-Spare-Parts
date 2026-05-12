@@ -1,10 +1,28 @@
+// ============================================================
+// user_view_product_page.dart — Customer: Product Detail Screen
+// ============================================================
+// Shows the customer a full-screen view of a single product with
+// a large expanding header image and a Hero animation from the
+// product list card.
+//
+// Bottom action bar:
+//   • "ADD TO CART" button if the product is in stock.
+//   • "OUT OF STOCK" disabled button otherwise.
+//
+// Tapping ADD TO CART opens a dialog asking for the desired
+// quantity (validated against available stock), then calls
+// DatabaseHelper.addToCart() and returns to the catalog.
+// ============================================================
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Customer-facing product detail and add-to-cart screen.
 class UserViewProductPage extends StatefulWidget {
+  /// The database id of the product to display.
   final int productId;
 
   const UserViewProductPage({super.key, required this.productId});

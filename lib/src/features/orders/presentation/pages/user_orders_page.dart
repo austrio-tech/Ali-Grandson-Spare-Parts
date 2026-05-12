@@ -1,9 +1,22 @@
+// ============================================================
+// user_orders_page.dart — Customer Order History Screen
+// ============================================================
+// Shows the logged-in customer's orders split into two tabs:
+//   • ACTIVE   — orders that are Pending, Ready, or In Delivery.
+//   • COMPLETED — orders that are Delivered or Cancelled.
+//
+// Tapping any order card opens OrderDetailPage for full details.
+// The TabController uses SingleTickerProviderStateMixin to drive
+// the tab animation efficiently.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'order_detail_page.dart';
 
+/// Displays the order history for the currently logged-in customer.
 class UserOrdersPage extends StatefulWidget {
   const UserOrdersPage({super.key});
 

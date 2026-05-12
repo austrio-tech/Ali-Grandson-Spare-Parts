@@ -1,8 +1,23 @@
+// ============================================================
+// order_detail_page.dart — Customer Order Details Screen
+// ============================================================
+// Shows all information about a single order for the customer:
+//   • A coloured status banner (Pending=yellow, Delivered=green, etc.)
+//   • Order summary card (date, payment mode, total, completion date)
+//   • Delivery details card (address, phone, special instructions)
+//   • A list of all individual items in the order
+//
+// The order map is passed from UserOrdersPage; item details are
+// fetched from the database using the order's id.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Read-only order details view for customers.
 class OrderDetailPage extends StatefulWidget {
+  /// The full order row map passed from the orders list screen.
   final Map<String, dynamic> order;
 
   const OrderDetailPage({super.key, required this.order});

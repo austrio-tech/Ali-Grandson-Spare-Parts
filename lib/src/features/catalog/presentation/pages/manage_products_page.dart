@@ -1,3 +1,19 @@
+// ============================================================
+// manage_products_page.dart — Admin Product Inventory Screen
+// ============================================================
+// Shows the admin a searchable list of all spare-part products.
+// An optional [filter] can narrow the list to:
+//   'out_of_stock' — products with 0 units available
+//   'low_stock'    — products with 1–9 units available
+//   null           — all products
+//
+// Each row shows a small thumbnail, name, price, and a coloured
+// stock dot (red/yellow/green).  Tapping a row opens ViewProductPage
+// where the admin can edit or delete the product.
+//
+// The "+" icon in the app bar opens AddProductPage.
+// ============================================================
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
@@ -5,7 +21,9 @@ import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/features/catalog/presentation/pages/add_product_page.dart';
 import 'package:alis_grandson_app/src/features/catalog/presentation/pages/view_product_page.dart';
 
+/// Admin screen for browsing and managing the product catalogue.
 class ManageProductsPage extends StatefulWidget {
+  /// Optional filter: 'out_of_stock', 'low_stock', or null for all.
   final String? filter;
   const ManageProductsPage({super.key, this.filter});
 

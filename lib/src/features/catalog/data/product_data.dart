@@ -1,7 +1,25 @@
+// ============================================================
+// product_data.dart — Default Product Seed Data
+// ============================================================
+// This file defines the five starter products that are inserted
+// into the database the very first time the app is installed.
+//
+// seedDatabase() is called from main.dart at startup.  It checks
+// whether the products table is empty before inserting anything,
+// so it never adds duplicates.
+//
+// Images are stored as raw bytes (Uint8List) in the database
+// so no external file references are needed at runtime.
+// ============================================================
+
 import 'package:flutter/services.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Provides default spare-part products to pre-populate the app on first run.
 class ProductData {
+  /// The list of default products.
+  /// Each map contains the product fields plus an `image_path` pointing to
+  /// a bundled asset — the path is replaced by actual bytes before saving.
   static final List<Map<String, dynamic>> defaultProducts = [
     {
       'name': 'Brake Pad',
@@ -55,23 +73,33 @@ class ProductData {
     },
   ];
 
+  /// Inserts [defaultProducts] into the database if the products table is empty.
+  /// Each product's image asset is loaded from the app bundle and converted to
+  /// bytes before being saved, so the database is fully self-contained.
   static Future<void> seedDatabase() async {
     final db = DatabaseHelper.instance;
+
+    // Only seed if no products exist yet (avoids inserting duplicates).
     final existingProducts = await db.getProducts();
     if (existingProducts.isEmpty) {
       for (var product in defaultProducts) {
         Uint8List? imageBytes;
         try {
+          // Load the image from the assets folder bundled with the app.
           final ByteData data = await rootBundle.load(product['image_path']);
           imageBytes = data.buffer.asUint8List();
         } catch (e) {
+          // If the image file is missing, continue without an image.
           print('Error loading image ${product['image_path']}: $e');
         }
 
+        // Copy the product map so we can modify it without affecting the original.
         final productToInsert = Map<String, dynamic>.from(product);
+
+        // Remove the asset path — the database stores bytes, not file paths.
         productToInsert.remove('image_path');
         productToInsert['image'] = imageBytes;
-        
+
         await db.insertProduct(productToInsert);
       }
     }

@@ -1,8 +1,23 @@
+// ============================================================
+// profile_page.dart — Customer Profile / Account Settings Screen
+// ============================================================
+// Lets the logged-in customer view and update their own account:
+//   • Full name, email address, phone number, and password.
+//   • Email uniqueness is checked before saving to prevent
+//     accidentally taking another user's email.
+//   • After saving, the email stored in SharedPreferences is also
+//     updated so the session remains consistent.
+//
+// The username is read-only (it is the primary key and cannot
+// be changed by the user from this screen).
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Account settings screen for the logged-in customer.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 

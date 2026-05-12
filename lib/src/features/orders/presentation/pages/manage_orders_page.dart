@@ -1,8 +1,23 @@
+// ============================================================
+// manage_orders_page.dart — Admin Orders List Screen
+// ============================================================
+// Lists all customer orders for the admin to review and manage.
+// An optional [filter] can be passed to show only:
+//   'pending'   — orders not yet delivered or cancelled
+//   'completed' — orders marked as Delivered
+//   null        — all orders
+//
+// Tapping an order opens AdminOrderDetailPage where the admin
+// can update the fulfilment status and send notifications.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/features/orders/presentation/pages/admin_order_detail_page.dart';
 
+/// Admin screen listing all orders, optionally filtered by status.
 class ManageOrdersPage extends StatefulWidget {
+  /// Optional filter: 'pending', 'completed', or null for all orders.
   final String? filter;
   const ManageOrdersPage({super.key, this.filter});
 

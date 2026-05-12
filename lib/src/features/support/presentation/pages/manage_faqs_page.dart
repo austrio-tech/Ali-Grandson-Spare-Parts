@@ -1,8 +1,25 @@
+// ============================================================
+// manage_faqs_page.dart — Admin: FAQ Management Screen
+// ============================================================
+// Shows the admin an expandable list of all FAQ entries.
+// Expanding a row reveals the answer plus EDIT and DELETE buttons.
+//
+// App bar actions:
+//   • History icon — restores the default factory FAQ list after
+//     showing a confirmation dialog.
+//   • "+" icon     — opens AddEditFAQPage to add a new FAQ.
+//
+// If the FAQ table is empty when this page loads (e.g. after all
+// FAQs were deleted), seedFAQs() is automatically called to
+// restore the defaults.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'add_edit_faq_page.dart';
 
+/// Admin screen for creating, editing, and deleting FAQ entries.
 class ManageFAQsPage extends StatefulWidget {
   const ManageFAQsPage({super.key});
 

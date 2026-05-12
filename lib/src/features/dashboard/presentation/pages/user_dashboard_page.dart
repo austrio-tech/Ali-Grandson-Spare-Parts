@@ -1,3 +1,25 @@
+// ============================================================
+// user_dashboard_page.dart — Customer Main Dashboard / Shop Screen
+// ============================================================
+// The home screen for logged-in customers.  It combines:
+//
+//   BannerCarousel — promotional banners that auto-scroll every 5 s.
+//   Search bar     — filters the product list in real time.
+//   Product list   — scrollable cards, each showing a thumbnail,
+//                    name, brand, price, and in/out-of-stock badge.
+//
+// The cart icon in the app bar shows a gold badge with the item
+// count and navigates to CartPage.
+//
+// A side drawer provides links to:
+//   Browse Catalog | My Orders | Account Settings | Help & Support
+//   Sign Out
+//
+// Data is reloaded whenever the user returns from a sub-screen
+// (e.g. after adding a product to the cart) to keep the count fresh.
+// A pull-to-refresh gesture also reloads everything.
+// ============================================================
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +34,7 @@ import 'package:alis_grandson_app/src/features/support/presentation/pages/faq_pa
 import 'package:alis_grandson_app/src/features/home/presentation/pages/home_page.dart';
 import 'package:alis_grandson_app/src/core/session/session_manager.dart';
 
+/// Customer home screen showing promotions, the product catalogue, and navigation.
 class UserDashboardPage extends StatefulWidget {
   const UserDashboardPage({super.key});
 

@@ -1,7 +1,26 @@
+// ============================================================
+// faq_page.dart — Customer Support Chat Screen
+// ============================================================
+// Displays a chatbot-style interface where customers can browse
+// frequently asked questions and see instant answers.
+//
+// How it works:
+//   • The screen starts with a greeting message from the "bot".
+//   • A floating "ASK A QUESTION" button opens a bottom sheet
+//     listing all FAQs loaded from the database.
+//   • When the user taps a question, both the question (right-
+//     aligned, maroon bubble) and the answer (left-aligned,
+//     white bubble) are added to the chat list.
+//   • The list auto-scrolls to the latest message.
+//
+// FAQs are managed by the admin via ManageFAQsPage.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Chat-style FAQ and support screen for customers.
 class FAQPage extends StatefulWidget {
   const FAQPage({super.key});
 

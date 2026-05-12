@@ -1,8 +1,24 @@
+// ============================================================
+// add_edit_faq_page.dart — Admin: Create or Edit FAQ Screen
+// ============================================================
+// A dual-purpose form used for both creating a new FAQ and
+// editing an existing one.
+//
+// Behaviour depends on whether [faq] is passed in:
+//   faq == null  → "Add" mode: form is blank, saves a new row.
+//   faq != null  → "Edit" mode: form pre-filled, updates existing row.
+//
+// The page title, icon, header text, and submit button label all
+// change automatically based on the mode.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Form screen for creating or editing a FAQ entry.
 class AddEditFAQPage extends StatefulWidget {
+  /// The existing FAQ map when editing, or null when creating a new entry.
   final Map<String, dynamic>? faq;
 
   const AddEditFAQPage({super.key, this.faq});

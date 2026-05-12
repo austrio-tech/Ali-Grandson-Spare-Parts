@@ -1,10 +1,27 @@
+// ============================================================
+// admin_order_detail_page.dart — Admin Order Management Screen
+// ============================================================
+// Allows the admin to:
+//   • View all details of a single order (customer, address, items).
+//   • Change the fulfilment status via a dropdown:
+//       Pending → Ready → In Delivery → Delivered / Cancelled
+//   • Cancellation requires a reason which is emailed to the customer.
+//   • Any status change triggers an email notification to the customer.
+//
+// The status change, database update, and email sending all happen
+// in _processStatusUpdate() which is called after the admin
+// selects a new value or confirms the cancellation dialog.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/shared/services/email_service.dart';
 import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
+/// Admin screen for viewing and updating a single order's status.
 class AdminOrderDetailPage extends StatefulWidget {
+  /// The full order row map passed from the orders list screen.
   final Map<String, dynamic> order;
 
   const AdminOrderDetailPage({super.key, required this.order});

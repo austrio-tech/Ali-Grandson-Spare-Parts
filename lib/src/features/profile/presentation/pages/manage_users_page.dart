@@ -1,8 +1,18 @@
+// ============================================================
+// manage_users_page.dart — Admin: User Accounts List Screen
+// ============================================================
+// Shows the admin a list of all registered customer accounts.
+// A summary header shows the total count.
+// Tapping a user card opens ViewUserPage where the admin can
+// edit the account, reset the password, or delete the user.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'view_user_page.dart';
 
+/// Admin screen listing all registered customer accounts.
 class ManageUsersPage extends StatefulWidget {
   const ManageUsersPage({super.key});
 

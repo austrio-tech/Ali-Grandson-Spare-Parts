@@ -1,3 +1,20 @@
+// ============================================================
+// add_product_page.dart — Admin: Add New Product Screen
+// ============================================================
+// The admin fills in this form to add a new spare part to the
+// catalogue.  Required fields: name, brand, type, compatibility,
+// price, quantity, and a product photo.
+//
+// After saving:
+//   • The product is inserted into the database.
+//   • All registered customers receive a "New Arrival" email.
+//
+// Image handling:
+//   • The admin taps the image area to open the device gallery.
+//   • The selected image is resized (max 800 px wide, quality 50%)
+//     and stored as bytes (Uint8List) in the database.
+// ============================================================
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -7,6 +24,7 @@ import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/shared/services/email_service.dart';
 import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
+/// Form screen for creating a new spare-part product listing.
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
 

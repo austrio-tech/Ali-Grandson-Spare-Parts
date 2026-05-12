@@ -1,3 +1,18 @@
+// ============================================================
+// edit_product_page.dart — Admin: Edit Existing Product Screen
+// ============================================================
+// Pre-fills all product fields from the database so the admin
+// can change any detail (name, price, stock, image, etc.).
+//
+// Special restock logic:
+//   • The old stock level is saved when the page loads (_oldStock).
+//   • When the admin saves, if _oldStock was 0 and the new stock
+//     is > 0, all customers receive a "Back in Stock" email.
+//
+// Image handling is the same as AddProductPage: tap to pick from
+// gallery, stored as bytes in the database.
+// ============================================================
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -7,7 +22,9 @@ import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/shared/services/email_service.dart';
 import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
+/// Form screen for editing an existing spare-part product.
 class EditProductPage extends StatefulWidget {
+  /// The database id of the product to be edited.
   final int productId;
 
   const EditProductPage({super.key, required this.productId});

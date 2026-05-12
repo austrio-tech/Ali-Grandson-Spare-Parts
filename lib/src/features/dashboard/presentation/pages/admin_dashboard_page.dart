@@ -1,3 +1,23 @@
+// ============================================================
+// admin_dashboard_page.dart — Admin Main Dashboard Screen
+// ============================================================
+// The home screen for the admin after login.  It provides a
+// high-level overview of the store at a glance:
+//
+//   Revenue card  — current month and all-time revenue.
+//   Stats grid    — 6 tappable tiles: users, products,
+//                   pending orders, completed orders,
+//                   out-of-stock items, low-stock items.
+//   Quick actions — shortcuts to add a new product and manage FAQs.
+//
+// All numbers are loaded fresh from the database in
+// _loadDashboardData(), which is also called when returning from
+// any sub-screen (via .then(() => _loadDashboardData())).
+//
+// A side drawer gives quick navigation to all admin sections.
+// The logout button clears the session and returns to HomePage.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/features/catalog/presentation/pages/manage_products_page.dart';
@@ -10,6 +30,7 @@ import 'package:alis_grandson_app/src/features/analytics/presentation/pages/reve
 import 'package:alis_grandson_app/src/features/home/presentation/pages/home_page.dart';
 import 'package:alis_grandson_app/src/core/session/session_manager.dart';
 
+/// Admin home screen showing store statistics and quick navigation.
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
 

@@ -1,15 +1,34 @@
+// ============================================================
+// revenue_analytics_page.dart — Admin Revenue Analytics Screen
+// ============================================================
+// Shows the admin a visual overview of delivered-order revenue.
+//
+// Features:
+//   • Filter chips to select the time period:
+//       Week | Month | Quarter | Year | Last Year | Custom range
+//   • Summary card showing total revenue and order count.
+//   • Line chart (fl_chart) with one data point per day, grouped
+//     and summed from the raw order rows.
+//   • Transaction list showing the last 10 orders.
+//   • Export to CSV — writes a timestamped file to the temp
+//     directory, then offers "Open" or "Share" via the OS.
+//
+// CSV columns: Order ID, Date, Customer, Amount, Payment Mode,
+//              Status, Address, Phone.
+// ============================================================
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart'; 
-import 'package:open_filex/open_filex.dart'; 
+import 'package:share_plus/share_plus.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
-// Different time intervals for revenue filtering
+/// Defines the selectable time periods for filtering revenue data.
 enum RevenueFilter { thisWeek, thisMonth, thisQuarter, thisYear, lastYear, custom }
 
 class RevenueAnalyticsPage extends StatefulWidget {

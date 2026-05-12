@@ -1,10 +1,26 @@
+// ============================================================
+// view_product_page.dart — Admin: Product Detail Screen
+// ============================================================
+// Shows the admin a full read-only view of a product with a
+// large expanding header image (SliverAppBar).
+//
+// Bottom action bar provides two buttons:
+//   • EDIT DETAILS — navigates to EditProductPage
+//   • Delete (bin icon) — shows a confirmation dialog, then
+//     permanently removes the product from the database.
+//
+// Stock level is shown as a coloured badge (green/red).
+// ============================================================
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'edit_product_page.dart';
 
+/// Admin product detail screen with edit and delete actions.
 class ViewProductPage extends StatefulWidget {
+  /// The database id of the product to display.
   final int productId;
 
   const ViewProductPage({super.key, required this.productId});

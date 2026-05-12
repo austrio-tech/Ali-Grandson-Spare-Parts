@@ -1,8 +1,24 @@
+// ============================================================
+// edit_user_page.dart — Admin: Edit Customer Account Screen
+// ============================================================
+// Allows the admin to modify a customer's profile fields:
+//   name, email, phone, and date of birth.
+//
+// The username field is displayed as read-only because it is
+// the primary key and cannot be changed without cascading issues.
+//
+// After saving, two Navigator.pop() calls are needed:
+//   1st pop — closes this edit page.
+//   2nd pop — closes the ViewUserPage so the list refreshes.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 
+/// Admin form screen for modifying an existing customer's account details.
 class EditUserPage extends StatefulWidget {
+  /// The customer's current data map used to pre-fill the form fields.
   final Map<String, dynamic> user;
 
   const EditUserPage({super.key, required this.user});

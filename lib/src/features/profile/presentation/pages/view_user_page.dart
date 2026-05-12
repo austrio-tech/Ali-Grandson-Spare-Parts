@@ -1,3 +1,19 @@
+// ============================================================
+// view_user_page.dart — Admin: User Detail Screen
+// ============================================================
+// Shows the admin all information about a single customer and
+// provides three admin actions:
+//
+//   1. EDIT ACCOUNT   — opens EditUserPage to change user details.
+//   2. RESET PASSWORD — generates a 10-character random password,
+//        updates it in the DB, and emails it to the user.
+//   3. DELETE USER    — permanently removes the account after
+//        showing a confirmation dialog.
+//
+// The user data map is passed in from ManageUsersPage and contains
+// username, name, email, phone, and date of birth.
+// ============================================================
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
@@ -6,7 +22,9 @@ import 'package:alis_grandson_app/src/features/profile/presentation/pages/edit_u
 import 'package:alis_grandson_app/src/shared/services/email_service.dart';
 import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
+/// Admin screen showing details of a single customer account.
 class ViewUserPage extends StatefulWidget {
+  /// The customer's data map passed from the user list screen.
   final Map<String, dynamic> user;
 
   const ViewUserPage({super.key, required this.user});

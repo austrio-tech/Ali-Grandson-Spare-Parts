@@ -1,3 +1,21 @@
+// ============================================================
+// order_page.dart — Checkout / Order Placement Screen
+// ============================================================
+// Presents a checkout form after the user taps "Proceed to Checkout"
+// from the cart.  The user enters:
+//   • Delivery address and contact phone number.
+//   • Optional special instructions (e.g. "Leave with neighbour").
+//   • Payment method: Cash on Delivery or Card.
+//     — Selecting Card reveals additional card detail fields.
+//
+// On confirmation:
+//   1. The order is saved to the database via placeOrder() which
+//      atomically deducts stock and clears the cart.
+//   2. Email notifications are sent to the admin (new order) and,
+//      if stock is now low/zero, a stock alert is also emailed.
+//   3. The user is returned to the dashboard.
+// ============================================================
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,6 +24,7 @@ import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/shared/services/email_service.dart';
 import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
+/// Checkout screen where users provide delivery details and confirm the order.
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
 
