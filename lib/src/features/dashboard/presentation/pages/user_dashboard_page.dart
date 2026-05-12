@@ -369,7 +369,7 @@ class _UserDashboardPageState extends State<UserDashboardPage> {
             decoration: const BoxDecoration(
               color: kPrimaryColor,
               image: DecorationImage(
-                image: AssetImage('lib/Imgs/logo.png'),
+                image: AssetImage('lib/assets/Imgs/logo.png'),
                 opacity: 0.03,
                 fit: BoxFit.cover,
               ),

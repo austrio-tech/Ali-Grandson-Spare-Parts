@@ -84,7 +84,7 @@ class _LoginUserPageState extends State<LoginUserPage> {
                     tag: 'logo',
                     child: Center(
                       child: Image.asset(
-                        'lib/Imgs/logo.png',
+                        'lib/assets/Imgs/logo.png',
                         height: 120,
                         fit: BoxFit.contain,
                       ),

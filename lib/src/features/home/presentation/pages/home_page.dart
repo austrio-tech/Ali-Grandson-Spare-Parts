@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                       backgroundColor: kSurfaceColor,
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: Image.asset('lib/Imgs/logo.png', fit: BoxFit.contain),
+                        child: Image.asset('lib/assets/Imgs/logo.png', fit: BoxFit.contain),
                       ),
                     ),
                   ),

@@ -15,9 +15,9 @@ class _BannerCarouselState extends State<BannerCarousel> {
   late Timer _timer;
   
   final List<String> _banners = [
-    'lib/Banner_Imgs/banner1.png',
-    'lib/Banner_Imgs/banner2.png',
-    'lib/Banner_Imgs/banner3.png',
+    'lib/assets/Banner_Imgs/banner1.png',
+    'lib/assets/Banner_Imgs/banner2.png',
+    'lib/assets/Banner_Imgs/banner3.png',
   ];
 
   @override
