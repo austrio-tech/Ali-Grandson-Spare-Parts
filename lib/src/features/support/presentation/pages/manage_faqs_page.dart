@@ -1,17 +1,17 @@
 // ============================================================
 // manage_faqs_page.dart — Admin: FAQ Management Screen
 // ============================================================
-// Shows the admin an expandable list of all FAQ entries.
-// Expanding a row reveals the answer plus EDIT and DELETE buttons.
+// Shows the admin a list of FAQ questions. Each question is a
+// shortcut that customers can tap in the Support screen; the AI
+// chatbot generates the answer live — no stored answers here.
 //
 // App bar actions:
-//   • History icon — restores the default factory FAQ list after
-//     showing a confirmation dialog.
-//   • "+" icon     — opens AddEditFAQPage to add a new FAQ.
+//   • History icon — restores the default factory questions after
+//     a confirmation dialog.
+//   • "+" icon     — opens AddEditFAQPage to add a new question.
 //
-// If the FAQ table is empty when this page loads (e.g. after all
-// FAQs were deleted), seedFAQs() is automatically called to
-// restore the defaults.
+// If the FAQ table is empty (e.g. after all entries were deleted),
+// seedFAQs() is automatically called to restore the defaults.
 // ============================================================
 
 import 'package:flutter/material.dart';
@@ -148,9 +148,15 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.help_outline_rounded, size: 80, color: kGreyMedium.withOpacity(0.5)),
+          Icon(Icons.help_outline_rounded, size: 80,
+              color: kGreyMedium.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
-          const Text('No FAQs found', style: TextStyle(color: kTextSecondary)),
+          const Text('No questions yet', style: TextStyle(color: kTextSecondary)),
+          const SizedBox(height: 8),
+          const Text(
+            'Tap + to add the first FAQ question.',
+            style: TextStyle(color: kGreyMedium, fontSize: 13),
+          ),
         ],
       ),
     );
@@ -158,55 +164,81 @@ class _ManageFAQsPageState extends State<ManageFAQsPage> {
 
   Widget _buildFAQCard(Map<String, dynamic> faq) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: kGreyLight)),
-      child: ExpansionTile(
-        tilePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        shape: const RoundedRectangleBorder(side: BorderSide.none),
-        title: Text(
-          faq['question'],
-          style: const TextStyle(fontWeight: FontWeight.bold, color: kSecondaryColor),
-        ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Divider(height: 24),
-                Text(
-                  faq['answer'],
-                  style: const TextStyle(color: kTextSecondary, height: 1.5),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AddEditFAQPage(faq: faq)),
-                        ).then((_) => _loadFAQs());
-                      },
-                      icon: const Icon(Icons.edit_outlined, size: 18),
-                      label: const Text('EDIT'),
-                      style: TextButton.styleFrom(foregroundColor: kPrimaryColor),
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton.icon(
-                      onPressed: () => _deleteFAQ(faq['id']),
-                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
-                      label: const Text('DELETE'),
-                      style: TextButton.styleFrom(foregroundColor: kErrorColor),
-                    ),
-                  ],
-                ),
-              ],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: kGreyLight),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Question icon
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: kPrimaryColor.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.help_outline_rounded,
+                  color: kPrimaryColor, size: 18),
             ),
-          ),
-        ],
+            const SizedBox(width: 14),
+
+            // Question text + AI badge
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    faq['question'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: kSecondaryColor,
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.smart_toy_outlined,
+                          size: 12, color: kGreyMedium),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Answered by AI chatbot',
+                        style: TextStyle(fontSize: 11, color: kGreyMedium),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Edit button
+            IconButton(
+              icon: const Icon(Icons.edit_outlined, size: 20),
+              color: kPrimaryColor,
+              tooltip: 'Edit question',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddEditFAQPage(faq: faq)),
+              ).then((_) => _loadFAQs()),
+            ),
+
+            // Delete button
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded, size: 20),
+              color: kErrorColor,
+              tooltip: 'Delete question',
+              onPressed: () => _deleteFAQ(faq['id']),
+            ),
+          ],
+        ),
       ),
     );
   }

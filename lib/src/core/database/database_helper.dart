@@ -226,26 +226,40 @@ class DatabaseHelper {
   /// or without one (it will open its own connection).
   Future<void> seedFAQs([Database? db]) async {
     final database = db ?? await instance.database;
+    // Answers are intentionally empty — the AI chatbot answers these
+    // questions live when a customer taps them in the Support screen.
     final List<Map<String, String>> defaultFaqs = [
       {
         'question': 'How do I place an order?',
-        'answer': 'To place an order, browse our products, select the item you need, choose the quantity, and add it to your cart. Once you are ready, go to your cart and click "Place Order" to provide your delivery details.'
+        'answer': '',
       },
       {
-        'question': 'Where is location for a company',
-        'answer': 'Ali Grandson Spare Parts is located in Muscat, Oman. You can find our physical store in the industrial area for genuine spare parts.'
+        'question': 'Where are your store locations?',
+        'answer': '',
       },
       {
-        'question': 'I need WhatsApp number to contact personaly',
-        'answer': 'You can reach us on WhatsApp at +968 1234 5678. We are available from 8 AM to 8 PM to assist you with your queries.'
+        'question': 'What is your WhatsApp number for support?',
+        'answer': '',
       },
       {
-        'question': 'What payment methods are accepted?',
-        'answer': 'We currently accept Cash on Delivery (COD) and all major Credit/Debit cards.'
+        'question': 'What payment methods do you accept?',
+        'answer': '',
       },
       {
         'question': 'Is my payment information secure?',
-        'answer': 'Yes, your safety is our priority. We use encrypted payment gateways, and we do not store your full card details on our local database.'
+        'answer': '',
+      },
+      {
+        'question': 'How long does delivery take?',
+        'answer': '',
+      },
+      {
+        'question': 'What is your return policy?',
+        'answer': '',
+      },
+      {
+        'question': 'How do I track my order?',
+        'answer': '',
       },
     ];
 

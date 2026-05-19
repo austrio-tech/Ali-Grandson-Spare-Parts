@@ -24,7 +24,7 @@ class ProductData {
     {
       'name': 'Brake Pad',
       'description': 'High-performance ceramic brake pads for smooth stopping power.',
-      'image_path': 'lib/Product_Data/brake_pad.jpeg',
+      'image_path': 'lib/assets/Product_Data/brake_pad.jpeg',
       'type': 'Sedan',
       'brand': 'Brembo',
       'model': '2020-2023',
@@ -34,7 +34,7 @@ class ProductData {
     {
       'name': 'Oil Filter',
       'description': 'Premium engine oil filter for maximum filtration and engine protection.',
-      'image_path': 'lib/Product_Data/oil_filter.jpeg',
+      'image_path': 'lib/assets/Product_Data/oil_filter.jpeg',
       'type': 'SUV',
       'brand': 'Bosch',
       'model': '2018-2022',
@@ -44,7 +44,7 @@ class ProductData {
     {
       'name': 'Spark Plug',
       'description': 'Iridium spark plugs for better fuel efficiency and reliable starts.',
-      'image_path': 'lib/Product_Data/spark_plug.jpg',
+      'image_path': 'lib/assets/Product_Data/spark_plug.jpg',
       'type': 'Coupe',
       'brand': 'NGK',
       'model': 'All Models',
@@ -54,7 +54,7 @@ class ProductData {
     {
       'name': 'Air Filter',
       'description': 'High-flow air filter to improve engine performance and longevity.',
-      'image_path': 'lib/Product_Data/air_filter.jpeg',
+      'image_path': 'lib/assets/Product_Data/air_filter.jpeg',
       'type': 'Truck',
       'brand': 'K&N',
       'model': '2015-2021',
@@ -64,7 +64,7 @@ class ProductData {
     {
       'name': 'Wiper Blades',
       'description': 'All-weather silicone wiper blades for crystal clear visibility.',
-      'image_path': 'lib/Product_Data/wiper_blades.jpg',
+      'image_path': 'lib/assets/Product_Data/wiper_blades.jpg',
       'type': 'Hatchback',
       'brand': 'Rain-X',
       'model': 'Universal',
