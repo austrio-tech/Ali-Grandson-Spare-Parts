@@ -151,14 +151,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(color: kTextSecondary, fontSize: 14)),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: isHighlight ? FontWeight.w900 : FontWeight.w600,
-              color: isHighlight ? kPrimaryColor : kSecondaryColor,
-              fontSize: isHighlight ? 16 : 14,
+          const SizedBox(width: 16),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontWeight: isHighlight ? FontWeight.w900 : FontWeight.w600,
+                color: isHighlight ? kPrimaryColor : kSecondaryColor,
+                fontSize: isHighlight ? 16 : 14,
+              ),
             ),
           ),
         ],
