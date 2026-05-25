@@ -276,7 +276,10 @@ class _OrderPageState extends State<OrderPage> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/user_dashboard',
+      (route) => false,
+    );
   }
 
   Future<void> _sendAdminNotifications(String orderId) async {
